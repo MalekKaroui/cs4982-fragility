@@ -1,0 +1,13 @@
+case,stress_level,nodes,edges,density,mean_fragility,max_fragility,min_fragility,std_fragility,most_critical_node,zero_fragility_count
+Sparse,low,40,234,0.15,0.1017,0.2577,0.0,0.0908,SOS005L04P,12
+Sparse,medium,40,234,0.15,0.4558,0.8391,0.0,0.3538,SOS005L04P,12
+Sparse,high,40,234,0.15,0.6254,0.9687,0.0,0.4632,POP005L04P,12
+Medium,low,40,468,0.3,0.4114,0.7661,0.0,0.3342,SOS002L09P,8
+Medium,medium,40,468,0.3,0.5951,0.9642,0.0,0.4512,SOS005L04P,8
+Medium,high,40,468,0.3,0.6343,0.9744,0.0,0.4578,POV500M24P,8
+Dense,low,40,702,0.45,0.568,0.9224,0.0,0.4232,SOS005L04P,5
+Dense,medium,40,702,0.45,0.6338,0.9734,0.0,0.4618,SOS005L04P,5
+Dense,high,40,702,0.45,0.6418,0.9744,0.0,0.4592,SOS008L02P,5
+Original,low,40,879,0.5635,0.6001,0.9544,0.0,0.4445,ATN02K12P,5
+Original,medium,40,879,0.5635,0.6373,0.9743,0.0,0.4627,MAR02K12P,5
+Original,high,40,879,0.5635,0.6435,0.9744,0.0,0.457,SOS008L02P,5

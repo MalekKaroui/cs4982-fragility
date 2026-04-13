@@ -1,0 +1,4 @@
+case,stress_level,nodes,edges,density,mean_fragility,max_fragility,min_fragility,most_critical_node,zero_fragility_count
+Kaggle,low,109,200,0.016989,0.0061,0.0952,0.0,SUP::Supplier 1,4
+Kaggle,medium,109,200,0.016989,0.0134,0.2102,0.0,SUP::Supplier 1,4
+Kaggle,high,109,200,0.016989,0.0187,0.287,0.0,SUP::Supplier 1,4
