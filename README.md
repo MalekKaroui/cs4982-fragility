@@ -1,217 +1,208 @@
 # Operational Fragility Modeling Framework for Industrial Supply Chains
 
-**CS4982 Senior Project - Winter 2026**
-
-**Author:** Malek Karoui
-
-**Supervisor:** Professor Baker
-
-**University of New Brunswick**
+**CS4982 Senior Project — Winter 2026**  
+**Author:** Malek Karoui  
+**Supervisor:** Professor Chris Baker  
+**University of New Brunswick (Saint John)**
 
 ---
 
 ## Overview
 
-This framework quantifies systemic fragility in industrial supply chains using Monte Carlo cascading failure simulations on directed dependency graphs. It integrates the World Bank Global Supply Chain Stress Index (GSCSI) to model low-, medium-, and high-stress scenarios.
+Industrial supply chains increasingly behave like **interdependent networks** rather than linear chains. This project provides a reproducible framework to quantify **cascading operational fragility** using:
 
-The primary output is a **Fragility Index F(v)** that measures the expected downstream disruption when a specific node fails.
+- **Directed dependency graphs** (NetworkX)
+- **Monte Carlo cascading-failure simulation** (BFS propagation)
+- **Stress scenarios** derived from the World Bank **Global Supply Chain Stress Index (GSCSI)**
+- Node-level **Fragility Index** scoring
+- A comparative study across multiple network coupling levels (density variants)
+- An interactive **Streamlit dashboard** for exploration
 
-```
-F(v) = (1/N) * SUM( C_i(v) )
-```
+The primary output is a **Fragility Index** \(F(v)\): the expected fraction of the network disrupted when node \(v\) fails.
 
-Where C_i(v) is the number of nodes affected in simulation trial i, and N is the total number of Monte Carlo iterations.
+\[
+F(v) = \frac{1}{N}\sum_{i=1}^{N}\frac{C_i(v)}{|V|-1}
+\]
 
----
-
-## Architecture
-
-```
-Public Data (CSVs)
-       |
-       v
-+--------------------+
-|   Graph Builder    |  <-- node.csv + edge.csv (SupplyGraph 2024)
-|   (NetworkX)       |
-+--------+-----------+
-         |
-         v
-+--------------------+     +--------------------+
-|   Monte Carlo      | <-- |   GSCSI Stress     |  <-- gcsi.csv
-|   Simulation       |     |   Model            |
-|   Engine           |     +--------------------+
-+--------+-----------+
-         |
-         v
-+--------------------+
-|   Fragility Index  |
-|   Computation      |
-+--------+-----------+
-         |
-         v
-+--------------------+
-|   Visualization    |  --> Plotly + Matplotlib
-|   Dashboard        |  --> Streamlit
-+--------------------+
-```
+Where:
+- \(C_i(v)\) is the number of downstream nodes affected in simulation trial \(i\)
+- \(N\) is the number of Monte Carlo trials (default: 500)
+- \(|V|\) is the number of nodes in the graph
 
 ---
 
-## Key Results
+## Repository Structure
 
-| Metric | Value |
-|--------|-------|
-| Total Nodes | 40 |
-| Total Edges | 879 |
-| Graph Density | 56.35% |
-| Monte Carlo Iterations | 500 per node |
-| Low Stress Avg Fragility | 60.0% |
-| Medium Stress Avg Fragility | 63.7% |
-| High Stress Avg Fragility | 64.4% |
-| Stress Amplification Factor | 1.07x |
-
-### Most Critical Nodes
-
-| Node | Role | Fragility |
-|------|------|-----------|
-| ATN02K12P | Assembly Terminal Node | 97.4% |
-| SOS005L04P | Solvent Supplier | 97.4% |
-| SOS500M24P | Solvent Supplier | 97.4% |
-| POP002L09P | Polymer Provider | 97.4% |
-| SOS003L04P | Solvent Supplier | 97.4% |
-
-### Isolated Nodes (Zero Fragility)
-
-| Node | Role |
-|------|------|
-| SO0001L12P | End-of-chain Solvent Output |
-| SO0500M24P | End-of-chain Solvent Output |
-| MAP1K25P | Final Assembly Part |
-| EEA500G12P | Final Electronic Assembly |
-| EEA200G24P | Final Electronic Assembly |
-
----
-
-## Project Structure
-
-```
+```text
 cs4982-fragility/
-|-- data/
-|   |-- node.csv
-|   |-- edge.csv
-|   |-- gcsi.csv
-|-- results/
-|-- figures/
-|-- config.py
-|-- supplygraph_loader.py
-|-- gcsi_loader.py
-|-- fragility.py
-|-- visualize.py
-|-- run_pipeline.py
-|-- run_diagnostics.py
-|-- dashboard.py
-|-- run_project.bat
-|-- requirements.txt
-|-- README.md
-```
+├── src/                        # Core modules (library)
+│   ├── config.py               # paths + parameters
+│   ├── supplygraph_loader.py   # SupplyGraph CSV → DiGraph
+│   ├── gcsi_loader.py          # GSCSI stress model
+│   ├── kaggle_loader.py        # Kaggle CSV → layered DiGraph
+│   ├── fragility.py            # Monte Carlo cascade engine
+│   ├── visualize.py            # Plotly + Matplotlib figures
+│   └── dashboard.py            # Streamlit dashboard
+│
+├── scripts/                    # Executable entry points
+│   ├── compare_networks.py     # 4-case comparative study (density variants)
+│   ├── run_pipeline.py         # single-network pipeline (SupplyGraph)
+│   ├── run_diagnostics.py      # convergence / diagnostics
+│   └── run_kaggle_analysis.py  # Kaggle operational graph analysis
+│
+├── data/                       # Input datasets
+│   ├── node.csv
+│   ├── edge.csv
+│   ├── gcsi.csv
+│   └── kaggle_supplychain/
+│       └── supply_chain_data.csv
+│
+├── results/                    # Generated CSV outputs
+├── figures/                    # Generated plots (PNG)
+├── run_project.bat             # Windows menu runner
+├── requirements.txt
+└── README.md
+Quick Start (Windows)
+Option 1 — Menu runner (recommended)
+cmd
 
----
+run_project.bat
+Option 2 — Manual commands
+cmd
 
-## Module Descriptions
-
-| Module | Purpose |
-|--------|--------|
-| config.py | Central configuration with all paths and parameters |
-| supplygraph_loader.py | Reads CSVs, maps indices to names, builds NetworkX DiGraph |
-| gcsi_loader.py | Loads GSCSI data, computes percentile thresholds |
-| fragility.py | Monte Carlo engine for cascading failure simulation |
-| visualize.py | Interactive Plotly charts and static Matplotlib PNGs |
-| run_pipeline.py | Full simulation workflow |
-| run_diagnostics.py | Data and graph validation |
-| dashboard.py | Streamlit web dashboard with 5 tabs |
-
----
-
-## Dashboard Tabs
-
-| Tab | Description |
-|-----|------------|
-| Overview | Summary metrics, histogram, top-K critical nodes |
-| Network Map | Interactive graph colored by fragility |
-| Node Explorer | Per-node stress sensitivity analysis |
-| Convergence | Monte Carlo convergence verification |
-| Stress Curve | System-wide stress amplification |
-
----
-
-## Data Sources
-
-| Dataset | Description |
-|---------|------------|
-| SupplyGraph (2024) | 40-node synthetic supply chain network |
-| World Bank GSCSI | Monthly stress index values |
-| PowerCascade (IEEE) | Cascading failure validation data |
-
----
-
-## Quick Start
-
-```bash
-git clone git@github.com:MalekKaroui/cs4982-fragility.git
-cd cs4982-fragility
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
-python run_diagnostics.py
-python run_pipeline.py
-streamlit run dashboard.py
-```
 
----
+python scripts\compare_networks.py
+streamlit run src\dashboard.py
+How to Run
+1) Comparative density study (recommended)
+Runs Sparse / Medium / Dense / Original network variants under low/medium/high stress.
 
-## Simulation Parameters
+Bash
 
-| Parameter | Value | Description |
-|-----------|-------|------------|
-| RANDOM_SEED | 42 | Reproducibility seed |
-| DEFAULT_N_CASCADES | 500 | Iterations per node |
-| WEIGHT_MIN | 0.10 | Min propagation probability |
-| WEIGHT_MAX | 0.65 | Max propagation probability |
-| GCSI_LOW_PERCENTILE | 33 | Low stress threshold |
-| GCSI_HIGH_PERCENTILE | 66 | High stress threshold |
+python scripts/compare_networks.py
+Outputs:
 
----
+results/network_comparison.csv
+figures/comparison/*.png
+per-case fragility CSVs in results/
+2) Single benchmark pipeline (SupplyGraph only)
+Bash
 
-## Theoretical Foundation
+python scripts/run_pipeline.py
+Outputs:
 
-- **Percolation Theory** - Probabilistic failure propagation through networks
-- **Watts (2002)** - Global cascades above critical connectivity thresholds
-- **Motter and Lai (2002)** - Cascade-based attacks on complex networks
-- **Helbing (2013)** - Globally networked risks and systemic collapse
-- **Gao et al. (2016)** - Universal resilience patterns in complex networks
+fragility CSVs under results/
+figures under figures/ (depending on pipeline configuration)
+3) Kaggle operational supply chain analysis
+Builds a layered operational graph: Supplier → SKU → Customer segment.
 
----
+Bash
 
-## Key Findings
+python scripts/run_kaggle_analysis.py
+Outputs:
 
-1. **Hypercritical Density:** At 56% density, any failure cascades to 60-97% of the network
-2. **Structural Vulnerability:** 1.07x amplification shows risk is topology-driven
-3. **Critical vs Safe:** 5 upstream nodes cause total collapse, 5 end nodes cause zero damage
-4. **Recommendation:** Reduce edge density below cascade threshold for resilience
+results/fragility_kaggle_low.csv
+results/fragility_kaggle_medium.csv
+results/fragility_kaggle_high.csv
+results/kaggle_summary.csv
+4) Diagnostics / convergence test
+Bash
 
----
+python scripts/run_diagnostics.py
+Outputs:
 
-## References
+results/convergence_test.csv
+5) Streamlit dashboard
+Bash
 
-- Buldyrev, S. et al. (2010). Catastrophic cascade of failures. Nature.
-- Gao, J. et al. (2016). Universal resilience patterns. Nature.
-- Helbing, D. (2013). Globally networked risks. Nature.
-- Motter, A. and Lai, Y.-C. (2002). Cascade-based attacks. Physical Review E.
-- Watts, D. (2002). Global cascades on random networks. PNAS.
-- World Bank (2024). Global Supply Chain Stress Index.
-- SupplyGraph Dataset (2024).
-- IEEE DataPort (2024). PowerCascade Dataset.
+streamlit run src/dashboard.py
+The dashboard reads results from results/ and provides:
 
----
+Overview (distribution + top-k nodes)
+Network heatmap (interactive Plotly)
+Node Explorer (stress sensitivity per node)
+Convergence (if available)
+Stress curve (system-wide)
+Method Summary
+Graph + propagation model
+Nodes represent supply-chain assets (anonymized SupplyGraph labels)
+Directed edges represent dependency links (failure propagates downstream)
+Each edge has a probability weight derived from min–max normalization into:
+[
+0.10
+,
+0.65
+]
+[0.10,0.65]
+Stress scenarios (GSCSI)
+Low / medium / high stress multipliers are derived from percentiles of the GSCSI distribution (33rd/50th/66th). These multipliers scale edge propagation probabilities.
 
-**Malek Karoui** - University of New Brunswick - malek.karoui@unb.ca
+Monte Carlo simulation
+For each seed node and stress level, the cascade simulation runs 
+N
+N trials (default 500) to estimate expected downstream impact.
+
+Core Results (from compare_networks.py)
+SupplyGraph benchmark (Original)
+Nodes: 40
+Edges: 879
+Density: 0.5635
+Comparative findings (mean fragility)
+The comparative study evaluates structural coupling by controlled edge removal (density variants):
+
+Case	Density	Low Mean F	High Mean F	Amplification
+Sparse	0.15	0.1017	0.6254	6.15×
+Medium	0.30	0.4114	0.6343	1.54×
+Dense	0.45	0.5680	0.6418	1.13×
+Original	0.5635	0.6001	0.6435	1.07×
+Key interpretation:
+
+Sparse networks are relatively safe under calm conditions but highly stress-sensitive.
+Dense networks are structurally fragile even under low stress (stress adds little additional fragility).
+Data Sources
+SupplyGraph benchmark dataset (CIOL Research Lab, 2024)
+Synthetic multi-tier supply chain dependency graph (node.csv + edge.csv)
+
+World Bank GSCSI (Global Supply Chain Stress Index, 2024)
+Used to derive stress scenario multipliers from empirical percentiles
+
+Kaggle Supply Chain Operations dataset (2024)
+Used to build a sparse operational graph (Supplier → SKU → Customer segment)
+
+Configuration
+All paths and parameters are centralized in:
+
+src/config.py
+Key parameters:
+
+RANDOM_SEED = 42
+DEFAULT_N_CASCADES = 500
+WEIGHT_MIN = 0.10
+WEIGHT_MAX = 0.65
+GCSI_LOW_PERCENTILE = 33
+GCSI_HIGH_PERCENTILE = 66
+Troubleshooting
+Run all commands from the project root (where src/, scripts/, data/ exist).
+If the dashboard shows no results, run:
+Bash
+
+python scripts/compare_networks.py
+or
+Bash
+
+python scripts/run_pipeline.py
+If Streamlit warns about deprecated use_container_width, it is safe to ignore (cosmetic).
+(You can replace use_container_width=True with width="stretch".)
+Suggested Citation
+bibtex
+
+@misc{karoui2026fragility,
+  author  = {Malek Karoui},
+  title   = {Operational Fragility Modeling Framework for Industrial Supply Chains},
+  year    = {2026},
+  note    = {CS4982 Senior Project, University of New Brunswick}
+}
+Contact: malek.karoui@unb.ca
