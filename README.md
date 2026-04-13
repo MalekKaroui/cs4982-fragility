@@ -231,9 +231,9 @@ Original network: high baseline fragility; stress amplifies it only slightly
 
 Configuration
 All parameters are centralized in:
-
-Code
+```
 src/config.py
+```
 Key settings:
 
 RANDOM_SEED
@@ -266,13 +266,15 @@ Explicit CSV + figure outputs
 
 Troubleshooting
 If the dashboard shows no data:
-
+```
 cmd
 python scripts\compare_networks.py
+```
 or:
-
+```
 cmd
 python scripts\run_pipeline.py
+```
 Streamlit layout warnings are cosmetic.
 
 References
