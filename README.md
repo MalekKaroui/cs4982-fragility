@@ -139,36 +139,54 @@ Code
 ### Option A — Windows (Recommended)
 Automatically creates a virtual environment and installs dependencies:
 
-```cmd
+```
+cmd
 run_project.bat
+```
 Option B — Manual Setup
 cmd
+```
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
+```
 Quick Start
 Run the comparative study
 cmd
+```
 python scripts\compare_networks.py
+```
 Launch the dashboard
+```
 cmd
 streamlit run src\dashboard.py
+```
 How to Run
 1) Comparative density study
+```
 cmd
 python scripts\compare_networks.py
-2) Single-network pipeline
+```
+3) Single-network pipeline
+```
 cmd
 python scripts\run_pipeline.py
-3) Diagnostics / convergence
+```
+5) Diagnostics / convergence
+```
 cmd
 python scripts\run_diagnostics.py
-4) Kaggle operational graph analysis
+```
+7) Kaggle operational graph analysis
+```
 cmd
 python scripts\run_kaggle_analysis.py
-5) Dashboard
+```
+9) Dashboard
+```
 cmd
 streamlit run src\dashboard.py
+```
 Outputs
 results/ (CSV)
 Typical files:
